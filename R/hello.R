@@ -1,6 +1,5 @@
-library(opencpu)
- test<-function(){
-   return("Cole")
+test<-function(){
+   print"Cole")
  }
-test()
+
 
