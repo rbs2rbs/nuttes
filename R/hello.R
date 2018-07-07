@@ -78,7 +78,7 @@ que<-function(pac,con,primeira){
 respotas<-function(respostas){
   respotas<-jsonlite::fromJSON(respostas)
   DBI::dbSedQuery(con(),sprintf("INSERT INTO respsostas (email,id_pergunta,resposta) VALUES
-                                      ('%S','%S','%S'),('%S','%S','%S'),('%S','%S','%S')",
+                                      ('%s','%s','%s'),('%s','%s','%s'),('%s','%s','%s')",
                               respotas$email,respotas$id_perguntas[1],respotas$resposta[1],
                               respotas$email,respotas$id_perguntas[2],respotas$resposta[2],
                               respotas$email,respotas$id_perguntas[3],respotas$resposta[3]))
