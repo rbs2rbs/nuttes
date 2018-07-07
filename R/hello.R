@@ -7,7 +7,7 @@ con<-function(){
   }
 
   # loads the PostgreSQL driver
-  drv <-  DBI::dbDriver("PostgreSQL")
+  drv <-  RPostgreSQL::PostgreSQL()
   # creates a connection to the postgres database
   # note that "con" will be used later in each connection to the database
   con <- DBI::dbConnect(drv, dbname = "d81pdf7aaq99dj",
