@@ -1,5 +1,5 @@
 test<-function(x){
-   jasonlite::toJSON(sprintf("%s Cole",x))
+   jsonlite::toJSON(sprintf("%s Cole",x))
  }
 
 
