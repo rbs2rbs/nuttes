@@ -1,7 +1,7 @@
 library(DBI)
 library(RPostgreSQL)
 library(jsonlite)
-con<-function(){
+cone<-function(){
   pw <- {
     "6097dbcfa7d4051e676d6259c286fdc04dc1fa58688dabdedf517785101e6935"
   }
@@ -77,10 +77,11 @@ que<-function(pac,con,primeira){
 
 respotas<-function(email,id_perguntas,respostas){
   # respotas<-jsonlite::fromJSON(email,idperguntas,respostas)
-  DBI::dbSendQuery(con(),sprintf("INSERT INTO respsostas (email,id_pergunta,resposta) VALUES
+  con<-cone()
+  DBI::dbSendQuery(con,sprintf("INSERT INTO respsostas (email,id_pergunta,resposta) VALUES
                                       ('%s','%s','%s'),('%s','%s','%s'),('%s','%s','%s')",
                               email,id_perguntas[1],resposta[1],
                               email,id_perguntas[2],resposta[2],
                               email,id_perguntas[3],resposta[3]))
-  return(DBI::dbGetQuery(con(),"SELECT*FROM respostas"))
+  return(DBI::dbGetQuery(con,"SELECT*FROM respostas"))
 }
