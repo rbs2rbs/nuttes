@@ -15,21 +15,50 @@ cone<-function(){
                         user = "jgdhyextboduau", password = pw)
   return(con)
   }
-que<-function(pac,con,primeira){
-  if(primeira){
-
-  }
-  if(!primeira){
-    t0=DBI::dbGetQuery(con,sprintf("SELECT MAX(data_inicio) FROM paciente WHERE email ='%s'",pac))
-    dft<-difftime(Sys.time(),t0[[1]],units = 'hours')
-    if(dft>24){
-      tipo_sort=list()
-      for(i in seq_len(trunc(dft/24)+1)){
-        tipo_sort[[i]]=sample(seq_len(4),3,replace=T)
-      }
-      id_per=t(sapply(tipo_sort,function(x){
-        sapply(x, function(y){
-          switch (y,
+quest<-function(pac){
+  if(nrow(DBI::dbGetQuery(con,sprintf("SELECT*FROM paciente WHERE email='%s'",pac)))!=0) val=T else val=F
+  if(is.na(DBI::dbGetQuery(con,sprintf("SELECT data_inicio FROM paciente WHERE email='%s'",pac)))) dieta = F else dieta = T
+  if(nrow(DBI::dbGetQuery(con,sprintf("SELECT*FROM respostas WHERE email='%s'",pac)))!=0) primeira =F else primeira =T
+  if(val){
+    if(dieta){
+      if(!primeira){
+        t0=DBI::dbGetQuery(con,sprintf("SELECT MAX(data_inicio) FROM paciente WHERE email ='%s'",pac))
+        dft<-difftime(Sys.time(),t0[[1]],units = 'hours')
+        if(dft>24){
+          tipo_sort=list()
+          for(i in seq_len(trunc(dft/24)+1)){
+            tipo_sort[[i]]=sample(seq_len(4),3,replace=T)
+          }
+          id_per=t(sapply(tipo_sort,function(x){
+            sapply(x, function(y){
+              switch (y,
+                      '1' = {
+                        return( sample(seq_len(10),1))
+                      },
+                      '2' = {
+                        return(sample(seq(11,15),1))
+                      },
+                      '3' = {
+                        return(sample(seq(16,21),1))
+                      },
+                      '4' = {
+                        return(sample(seq(22,24),1))
+                      }
+              )})
+          }))
+          id_per_sem_resposta=as.vector(id_per[-nrow(id_per),])
+          data_sem_resposta=t0[[1]]-rev(rep(seq(length(id_per_sem_resposta)/3),each=3))
+          id_per=as.vector(id_per[nrow(id_per),])
+          DBI::dbSendQuery(con,sprintf("INSERT INTO respostas (id_pergunta,email,data,resposta)
+                                       VALUES %s;",paste(sprintf('(%s)',
+                                                                 paste(id_per_sem_resposta,sprintf("'%s'",pac),sprintf("to_date('%s','YYYY-MM-DD')",data_sem_resposta),-1,sep=',')),
+                                                         collapse=',')))
+          return(jsonlite::toJSON(DBI::dbGetQuery(con,sprintf("SELECT * FROM perguntas WHERE id IN(%s)",paste(id_per,collapse = ',')))))
+        }else return("Perguntas de hoje já respondidas\nAmanhã novas perguntas serão geradas")
+      }else{
+        tipo_sort=sample(seq_len(4),3,replace=T)
+        id_per=apply(matrix(tipo_sort),1,function(x){
+          switch (x,
                   '1' = {
                     return( sample(seq_len(10),1))
                   },
@@ -42,39 +71,17 @@ que<-function(pac,con,primeira){
                   '4' = {
                     return(sample(seq(22,24),1))
                   }
-          )})
-      }))
-      id_per_sem_resposta=as.vector(id_per[-nrow(id_per),])
-      data_sem_resposta=t0[[1]]-rev(rep(seq(length(id_per_sem_resposta)/3),each=3))
-      id_per=as.vector(id_per[nrow(id_per),])
-      DBI::dbSendQuery(con,sprintf("INSERT INTO respostas (id_pergunta,email,data,resposta)
-                                   VALUES %s;",paste(sprintf('(%s)',
-                                                             paste(id_per_sem_resposta,sprintf("'%s'",pac),sprintf("to_date('%s','YYYY-MM-DD')",data_sem_resposta),-1,sep=',')),
-                                                     collapse=',')))
-      return(jsonlite::toJSON(DBI::dbGetQuery(con,sprintf("SELECT * FROM perguntas WHERE id IN(%s)",paste(id_per,collapse = ',')))))
-    }else return("Perguntas de hoje já respondidas\nAmanhã novas perguntas serão geradas")
+          )
+        })
+        return(jsonlite::toJSON(DBI::dbGetQuery(con,sprintf("SELECT * FROM perguntas WHERE id IN(%s)",paste(id_per,collapse = ',')))))
+      }
+    }else{
+      return(jsonlite::toJSON("Dieta não iniciada"))
+    }
   }else{
-    tipo_sort=sample(seq_len(4),3,replace=T)
-    id_per=apply(matrix(tipo_sort),1,function(x){
-      switch (x,
-              '1' = {
-                return( sample(seq_len(10),1))
-              },
-              '2' = {
-                return(sample(seq(11,15),1))
-              },
-              '3' = {
-                return(sample(seq(16,21),1))
-              },
-              '4' = {
-                return(sample(seq(22,24),1))
-              }
-      )
-    })
-    return(jsonlite::toJSON(DBI::dbGetQuery(con,sprintf("SELECT * FROM perguntas WHERE id IN(%s)",paste(id_per,collapse = ',')))))
+    return(jsonlite::toJSON("invalido"))
   }
 }
-
 respotas<-function(email,id_perguntas,resposta){
   # respotas<-jsonlite::fromJSON(email,idperguntas,respostas)
   con<-cone()
