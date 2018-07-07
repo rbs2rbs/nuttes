@@ -82,4 +82,5 @@ respotas<-function(email,id_perguntas,respostas){
                               email,id_perguntas[1],resposta[1],
                               email,id_perguntas[2],resposta[2],
                               email,id_perguntas[3],resposta[3]))
+  return(dbGetQuery(con(),"SELECT*FROM respostas"))
 }
