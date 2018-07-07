@@ -1,5 +1,5 @@
-test<-function(){
-   print("Cole")
+test<-function(x){
+   sprintf("%s Cole",x)
  }
 
 
