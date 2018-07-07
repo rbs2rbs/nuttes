@@ -1,5 +1,5 @@
 test<-function(){
-   print"Cole")
+   print("Cole")
  }
 
 
