@@ -1,6 +1,6 @@
 library(DBI)
 library(RPostgreSQL)
-library(RPostgre)
+library(RPostgres)
 library(jsonlite)
 con<-function(){
   pw <- {
