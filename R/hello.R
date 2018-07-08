@@ -83,13 +83,13 @@ quest<-function(pac){
     return(jsonlite::toJSON("invalido"))
   }
 }
-respotas<-function(email,id_perguntas,resposta){
-  # respotas<-jsonlite::fromJSON(email,idperguntas,respostas)
-  con<-cone()
-  DBI::dbSendQuery(con,sprintf("INSERT INTO respostas (email,id_pergunta,resposta) VALUES
-                                      ('%s','%s','%s'),('%s','%s','%s'),('%s','%s','%s')",
-                              email,id_perguntas[1],resposta[1],
-                              email,id_perguntas[2],resposta[2],
-                              email,id_perguntas[3],resposta[3]))
-  return(DBI::dbGetQuery(con,"SELECT*FROM respostas"))
-}
+  respostas<-function(email,id_perguntas,resposta){
+    # respotas<-jsonlite::fromJSON(email,idperguntas,respostas)
+    con<-cone()
+    DBI::dbSendQuery(con,sprintf("INSERT INTO respostas (email,id_pergunta,resposta) VALUES
+                                        ('%s','%s','%s'),('%s','%s','%s'),('%s','%s','%s')",
+                                email,id_perguntas[1],resposta[1],
+                                email,id_perguntas[2],resposta[2],
+                                email,id_perguntas[3],resposta[3]))
+    return(DBI::dbGetQuery(con,"SELECT*FROM respostas"))
+  }
