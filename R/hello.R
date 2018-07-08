@@ -16,6 +16,7 @@ cone<-function(){
   return(con)
   }
 quest<-function(pac){
+  con<-cone
   if(nrow(DBI::dbGetQuery(con,sprintf("SELECT*FROM paciente WHERE email='%s'",pac)))!=0) val=T else val=F
   if(is.na(DBI::dbGetQuery(con,sprintf("SELECT data_inicio FROM paciente WHERE email='%s'",pac)))) dieta = F else dieta = T
   if(nrow(DBI::dbGetQuery(con,sprintf("SELECT*FROM respostas WHERE email='%s'",pac)))!=0) primeira =F else primeira =T
